@@ -1,0 +1,55 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}Gestão de Clientes - Alpha Distribuidora{% endblock title %}
+
+{% block header_title %} Gestão de Clientes {% endblock header_title %}
+
+{% block content %}
+  <div class="metric-container">
+    <div class="metric-card border-blue">
+        <div class="metric-info">
+            <span class="metric-title">TOTAL DE CLIENTES</span>
+            <h3 class="metric-value">1.248</h3>
+        </div>
+        <div class="metric-icon">👥</div>
+    </div>
+
+    <div class="metric-card border-green">
+        <div class="metric-info">
+            <span class="metric-title">NOVOS (MÊS)</span>
+            <h3 class="metric-value">42</h3>
+        </div>
+        <div class="metric-icon">👤+</div>
+    </div>
+
+    <div class="metric-card border-orange">
+        <div class="metric-info">
+            <span class="metric-title">CLIENTES INATIVOS</span>
+            <h3 class="metric-value">34</h3>
+        </div>
+        <div class="metric-icon">📋</div>
+    </div>
+
+    <div class="metric-card border-dark">
+        <div class="metric-info">
+            <span class="metric-title">TICKET MÉDIO</span>
+            <h3 class="metric-value">R$ 3.240</h3>
+        </div>
+        <div class="metric-icon">⭐</div>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-header">
+        <h3>BASE DE CLIENTES</h3>
+        <div class="table-actions">
+            <button class="btn-primary">+ NOVO CLIENTE</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <p style="padding: 20px; color: #888; text-align: center;">Tabela de clientes</p>
+    </div>
+  </div>
+{% endblock content %}

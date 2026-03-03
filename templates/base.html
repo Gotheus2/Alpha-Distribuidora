@@ -1,0 +1,62 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Alpha Distribuidora{% endblock title %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <div class="layout-wrapper">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <img
+            src="{% static 'img/alpha_logo.png' %}"
+            alt="Logo Alpha Distribuidora"
+          />
+        </div>
+
+        <nav class="sidebar-nav">
+          <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Clientes</a></li>
+            <li><a href="#">Vendedores</a></li>
+            <li><a href="#">Vendas</a></li>
+            <li><a href="#">Produtos</a></li>
+            <li><a href="#">Financeiro</a></li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="#">Sair do sistema</a>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="top-header">
+          <div class="header-title">
+            <h2>
+              {% block header_title %}Dashboard{% endblock header_title %}
+            </h2>
+          </div>
+          <div class="header-search">
+            <input type="text" placeholder="Buscar..." />
+          </div>
+          <div class="header-profile">
+            <div class="profile-info">
+              <span class="profile-name">Nome</span>
+              <span class="profile-role">Cargo</span>
+            </div>
+            <img src="{% static 'img/user.png' %}" class="profile-avatar" />
+          </div>
+        </header>
+
+        <div class="content-area">
+          {% block content %} {% endblock content %}
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
