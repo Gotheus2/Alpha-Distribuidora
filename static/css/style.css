@@ -62,7 +62,7 @@ body {
 .sidebar-nav ul { list-style: none; }
 
 .sidebar-nav a {
-  display: block;
+  display: flex;
   color: #ffffff;
   text-decoration: none;
   padding: 12px 20px;
@@ -71,6 +71,8 @@ body {
   font-weight: 500;
   font-size: 0.95rem;
   transition: background-color 0.3s ease;
+  align-items: center;
+  gap: 10px;
 }
 
 .sidebar-nav a:hover {
@@ -78,7 +80,15 @@ body {
 }
 
 .sidebar-footer { padding: 20px; text-align: center; }
-.sidebar-footer a { color: #fff; text-decoration: none; font-size: 0.9rem; }
+.sidebar-footer a { 
+  color: #fff; 
+  text-decoration: none; 
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem; 
+  justify-content: center;
+}
 
 .top-header {
   display: flex;
@@ -143,7 +153,7 @@ body {
   flex: 1;
 }
 
-.metrics-container {
+.metric-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
@@ -231,4 +241,205 @@ body {
 
 .btn-primary:hover {
   background-color: #004280;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead tr {
+  border-bottom: 2px solid var(--cinza-claro);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 10px 15px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--texto-mutado);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.data-table td {
+  padding: 14px 15px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--cinza-escuro);
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.btn-table {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.btn-edit {
+  color: var(--azul-alpha);
+}
+
+.btn-edit:hover {
+    background-color: #e8f0fb;
+}
+
+.btn-delete {
+    color: #dc2626;
+}
+
+.btn-delete:hover {
+    background-color: #fde8e8;
+}
+
+.sidebar-nav a.active {
+  background-color: #1e40af;
+  font-weight: 700;
+}
+
+.sidebar-nav a svg,
+.sidebar-footer a svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.sidebar-nav a.active svg {
+  opacity: 1;
+}
+
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+}
+
+.drawer-overlay.open {
+  display: block;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100vh;
+  background-color: var(--bg-pagina);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header{
+  font-size: 1.1rem;
+  padding: 15px;
+  gap: 5px;
+  display: flex;
+  font-weight: 700;
+  color: var(--cinza-escuro);
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--texto-mutado);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.drawer-close:hover {
+  color: var(--cinza-escuro);
+}
+
+.drawer-body {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--texto-mutado);
+  text-transform: uppercase;
+  letter-spacing: 0.06rem;
+}
+
+.form-input {
+  padding: 12px 14px;
+  border: 1px solid var(--cinza-escuro);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--cinza-escuro);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--azul-alpha);
+}
+
+.form-input::placeholder {
+  color: var(--cinza-claro);
+}
+
+.drawer-footer {
+  padding: 24px 32px;
+  border-top: 1px solid var(--cinza-claro);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 13px;
+  font-size: 0.95rem;
+}
+
+.btn-secondary {
+  background-color: #f3f4f6;
+  border: none;
+  color: var(--texto-mutado);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
 }
