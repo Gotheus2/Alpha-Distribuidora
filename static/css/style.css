@@ -387,6 +387,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .form-label {
@@ -402,7 +403,6 @@ body {
   border: 1px solid var(--cinza-escuro);
   border-radius: 6px;
   font-size: 0.9rem;
-  color: var(--cinza-escuro);
   outline: none;
   transition: border-color 0.2s;
 }
@@ -442,4 +442,204 @@ body {
 
 .btn-secondary:hover {
   background-color: #e5e7eb;
+}
+
+.produtos-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.produto-nome {
+  font-weight: 500;
+  color: var(--cinza-escuro);
+  font-size: 0.9rem;
+}
+
+.produto-sku {
+  font-size: 0.75rem;
+  color: var(--texto-mutado);
+  margin-top: 2px;
+}
+
+.badge-margem {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge-margem.alta   { background-color: #dcfce7; color: #166534; }
+.badge-margem.media  { background-color: #fef3c7; color: #92400e; }
+.badge-margem.baixa  { background-color: #fee2e2; color: #991b1b; }
+
+.badge-estoque {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge-estoque.ok     { background-color: #dcfce7; color: #166534; }
+.badge-estoque.baixo  { background-color: #fef3c7; color: #92400e; }
+.badge-estoque.zerado { background-color: #fee2e2; color: #991b1b; }
+
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 4px 0;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 8px;
+}
+
+.pagination-info {
+  font-size: 0.8rem;
+  color: var(--texto-mutado);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-pag {
+  padding: 6px 16px;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.82rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  color: var(--cinza-escuro);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-pag:hover:not(:disabled) { background-color: #f3f4f6; }
+.btn-pag:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.produto-form-panel {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-panel-header {
+  padding: 20px 24px 12px 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.form-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cinza-escuro);
+}
+
+.form-panel-subtitle {
+  font-size: 0.78rem;
+  color: var(--texto-mutado);
+  margin-top: 4px;
+}
+
+.form-panel-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  min-width: 0;
+}
+
+.form-select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.margem-estimada-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f4ff;
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+.margem-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--azul-alpha);
+}
+
+.margem-valor {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--azul-alpha);
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px dashed var(--cinza-claro);
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.upload-area:hover { border-color: var(--azul-alpha); }
+
+.upload-area p {
+  font-size: 0.82rem;
+  color: var(--texto-mutado);
+}
+
+.upload-link {
+  color: var(--azul-alpha);
+  font-weight: 600;
+}
+
+.upload-hint {
+  font-size: 0.72rem !important;
+  color: #b0b7c3 !important;
+}
+
+.form-panel-footer {
+  padding: 16px 24px 20px 24px;
+}
+
+.btn-success {
+  background-color: var(--verde-alpha);
+  border: none;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-success:hover { background-color: #1e8c38; }
+
+.metric-value.produto-mais-vendido {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.3;
 }

@@ -11,7 +11,7 @@ def vendas(request):
     pass
 
 def produtos(request):
-    pass
+    return render(request, "produtos.html")
 
 def financeiro(request):
     pass
