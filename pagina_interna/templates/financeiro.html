@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Finanças | Alpha Distribuidora{% endblock title %}
+{% block header_title %} Gerenciamento Financeiro {% endblock header_title %}
+{% block content %}
+<style>
+  
+  .page-header{display:flex;align-items:center;justify-content:space-between;margin:6px 0 18px;}
+  .page-header h1{font-size:1.15rem;font-weight:800;color:var(--cinza-escuro);}
+  .finance-grid{display:grid;grid-template-columns: 1fr;gap:18px;}
+  .summary-row{display:grid;grid-template-columns: repeat(3, 1fr);gap:16px;}
+  .summary-tile{border-radius:8px;padding:18px 22px;border:2px solid transparent;background:#fff;display:flex;flex-direction:column;gap:6px;min-height:86px;justify-content:center;}
+  .summary-tile .label{font-size:.72rem;font-weight:700;color:var(--texto-mutado);text-transform:uppercase;letter-spacing:.06em;}
+  .summary-tile .value{font-size:1.35rem;font-weight:800;}
+  .tile-in{background:#dcfce7;border-color:#86efac;}
+  .tile-in .value{color:#15803d;}
+  .tile-out{background:#fee2e2;border-color:#fca5a5;}
+  .tile-out .value{color:#b91c1c;}
+  .tile-balance{background:#dbeafe;border-color:#93c5fd;}
+  .tile-balance .value{color:#1d4ed8;}
+  .two-col{display:grid;grid-template-columns: 360px 1fr;gap:18px;align-items:start;}
+  .panel{background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.03);padding:18px;}
+  .panel h3{font-size:.9rem;font-weight:800;color:var(--cinza-escuro);margin-bottom:14px;}
+  .type-toggle{display:flex;gap:10px;margin-bottom:14px;}
+  .toggle-btn{flex:1;border:1px solid #e5e7eb;background:#f3f4f6;color:var(--cinza-escuro);border-radius:8px;padding:10px 12px;font-weight:800;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .toggle-btn.is-active{background:var(--azul-alpha);border-color:var(--azul-alpha);color:#fff;}
+  .form-row{display:grid;grid-template-columns: 1fr 150px;gap:12px;}
+  .form-row .form-input{width:100%;box-sizing:border-box;}
+  #id_data{width:100%;min-width:0;}
+  .help-muted{font-size:.78rem;color:var(--texto-mutado);}
+  .table-footer{display:flex;justify-content:flex-end;margin-top:10px;}
+  .table-total{font-size:.8rem;color:var(--texto-mutado);}
+  .type-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-weight:800;font-size:.72rem;}
+  .type-pill.in{background:#d1fae5;color:#166534;}
+  .type-pill.out{background:#fee2e2;color:#991b1b;}
+  .value-in{color:#15803d;font-weight:800;}
+  .value-out{color:#b91c1c;font-weight:800;}
+  @media (max-width: 1100px){
+    .summary-row{grid-template-columns:1fr; }
+    .two-col{grid-template-columns:1fr;}
+  }
+</style>
+
+
+<div class="finance-grid">
+  <section>
+    <div class="table-header" style="margin-bottom:12px;">
+      <h3>Faturamento Consolidado</h3>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-tile tile-in">
+        <div class="label">Total de Entradas</div>
+        <div class="value">R$ {{ total_entradas|default:"0,00" }}</div>
+      </div>
+
+      <div class="summary-tile tile-out">
+        <div class="label">Total de Saídas</div>
+        <div class="value">R$ {{ total_saidas|default:"0,00" }}</div>
+      </div>
+
+      <div class="summary-tile tile-balance">
+        <div class="label">Saldo Atual</div>
+        <div class="value">R$ {{ saldo_atual|default:"0,00" }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="two-col">
+    
+    <div class="panel">
+      <h3>Registrar Movimentação Financeira</h3>
+
+      <div class="type-toggle" role="tablist" aria-label="Tipo de movimentação">
+        <button type="button" class="toggle-btn is-active" id="btnEntrada" onclick="setTipo('ENTRADA')">
+          + Entrada
+        </button>
+        <button type="button" class="toggle-btn" id="btnSaida" onclick="setTipo('SAIDA')">
+          − Saída
+        </button>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="tipo" id="tipoMov" value="ENTRADA"/>
+
+        <div class="form-group">
+          <label class="form-label" for="id_categoria">Categoria</label>
+          <input class="form-input" type="text" name="categoria" id="id_categoria" placeholder="Ex: Vendas, Energia, Aluguel" value="{{ form.categoria.value|default:'' }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="id_descricao">Descrição</label>
+          <input class="form-input" type="text" name="descricao" id="id_descricao" placeholder="Ex: Aluguel do mês de fevereiro" value="{{ form.descricao.value|default:'' }}">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="id_valor">Valor (R$)</label>
+            <input class="form-input" type="number" step="0.01" name="valor" id="id_valor" placeholder="0,00" value="{{ form.valor.value|default:'' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="id_data">Data</label>
+            <input class="form-input" type="date" name="data" id="id_data" value="{{ form.data.value|default:'' }}">
+          </div>
+        </div>
+
+        <div class="drawer-footer" style="padding:16px 0 0;border-top:none;">
+          <button class="btn-primary btn-block" type="submit">Adicionar Movimentação</button>
+          <div class="help-muted">
+            Dica: use “Entrada” para receitas e “Saída” para despesas.
+          </div>
+        </div>
+      </form>
+    </div>
+
+    
+    <div class="panel">
+      <div class="table-header" style="margin-bottom:10px;">
+        <h3>Histórico de Movimentações</h3>
+        {% if ver_tudo_url %}
+          <div class="table-actions">
+            <a class="btn-secondary" href="{{ ver_tudo_url }}" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;">
+              Ver tudo
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:120px;">Tipo</th>
+            <th style="width:160px;">Categoria</th>
+            <th>Descrição</th>
+            <th style="width:140px;">Valor</th>
+            <th style="width:120px;">Data</th>
+            <th style="width:90px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mov in movimentacoes %}
+            <tr>
+              <td>
+                {% if mov.tipo == 'ENTRADA' %}
+                  <span class="type-pill in">+ Entrada</span>
+                {% else %}
+                  <span class="type-pill out">− Saída</span>
+                {% endif %}
+              </td>
+              <td>{{ mov.categoria }}</td>
+              <td>{{ mov.descricao }}</td>
+              <td>
+                {% if mov.tipo == 'ENTRADA' %}
+                  <span class="value-in">+ R$ {{ mov.valor }}</span>
+                {% else %}
+                  <span class="value-out">- R$ {{ mov.valor }}</span>
+                {% endif %}
+              </td>
+              <td>{{ mov.data|date:"d/m/Y" }}</td>
+              <td>
+                <a class="btn-table btn-edit" href="{% url 'pagina_interna:financeiro_editar' mov.id %}" title="Editar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                  </svg>
+                </a>
+                <a class="btn-table btn-delete" href="{% url 'pagina_interna:financeiro_excluir' mov.id %}" title="Excluir">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                  </svg>
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="padding:18px;color:var(--texto-mutado);">
+                Nenhuma movimentação registrada ainda.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="table-footer">
+        <div class="table-total">Total: {{ movimentacoes|length }} movimentações</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  function setTipo(tipo){
+    const inp = document.getElementById('tipoMov');
+    const btnE = document.getElementById('btnEntrada');
+    const btnS = document.getElementById('btnSaida');
+
+    inp.value = tipo;
+
+    if(tipo === 'ENTRADA'){
+      btnE.classList.add('is-active');
+      btnS.classList.remove('is-active');
+    }else{
+      btnS.classList.add('is-active');
+      btnE.classList.remove('is-active');
+    }
+  }
+</script>
+{% endblock content %}

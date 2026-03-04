@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vendedores{% endblock %}
+
+{% block header_title %}
+Gerenciamento de Vendedores
+{% endblock %}
+
+{% block content %}
+
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="flash-success">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="vendedores-layout">
+
+
+  <div class="table-section table-section--vendedores">
+
+    <div class="table-header">
+      <div>
+        <h3>Base de Vendedores</h3>
+        <div class="table-subtitle">
+          Total: {{ total_vendedores_ativos|default:page_obj.paginator.count|default:vendedores|length }} vendedores ativos
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="openDrawer()">
+        + Novo Vendedor
+      </button>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for vendedor in vendedores %}
+          <tr class="{% if editando and form.instance.id == vendedor.id %}is-selected{% endif %}">
+            <td>{{ vendedor.nome }}</td>
+            <td>{{ vendedor.cpf }}</td>
+            <td>{{ vendedor.email }}</td>
+            <td>{{ vendedor.telefone }}</td>
+
+            <td class="acoes-col">
+              <a href="{% url 'pagina_interna:editar_vendedor' vendedor.id %}"
+                 class="btn-table btn-edit"
+                 title="Editar">
+                ✏️
+              </a>
+
+              <form method="POST"
+                    action="{% url 'pagina_interna:deletar_vendedor' vendedor.id %}"
+                    style="display:inline;">
+                {% csrf_token %}
+                <button class="btn-table btn-delete"
+                        title="Excluir"
+                        onclick="return confirm('Excluir vendedor?')">
+                  🗑️
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">Nenhum vendedor cadastrado.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+
+    <div class="table-footer">
+      <div class="table-results">
+        {% if page_obj %}
+          Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} resultados
+        {% else %}
+          Mostrando 1 a {{ vendedores|length }} de {{ vendedores|length }} resultados
+        {% endif %}
+      </div>
+
+      {% if page_obj and page_obj.paginator.num_pages > 1 %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a class="page-btn" href="?page={{ page_obj.previous_page_number }}" aria-label="Anterior">‹</a>
+        {% else %}
+          <span class="page-btn is-disabled" aria-hidden="true">‹</span>
+        {% endif %}
+
+        {% for p in page_obj.paginator.page_range %}
+          {% if p == page_obj.number %}
+            <span class="page-number is-active">{{ p }}</span>
+          {% elif p >= page_obj.number|add:"-2" and p <= page_obj.number|add:"2" %}
+            <a class="page-number" href="?page={{ p }}">{{ p }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a class="page-btn" href="?page={{ page_obj.next_page_number }}" aria-label="Próxima">›</a>
+        {% else %}
+          <span class="page-btn is-disabled" aria-hidden="true">›</span>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+</div>
+
+
+<div id="drawerOverlay"
+     class="drawer-overlay"
+     onclick="closeDrawer()"></div>
+
+
+<div id="drawer" class="drawer drawer--details">
+
+  <div class="drawer-top">
+    <div class="drawer-title">
+      {% if editando %}Detalhes do Vendedor{% else %}Novo Vendedor{% endif %}
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Fechar">✕</button>
+  </div>
+
+  <div class="drawer-body">
+
+    {% if editando %}
+
+      <div class="vendor-header">
+        <div class="vendor-avatar">
+          {% if form.instance.foto %}
+            <img src="{{ form.instance.foto.url }}" alt="Foto do vendedor" />
+          {% else %}
+            <span id="vendorInitials" data-name="{{ form.instance.nome|default:'' }}">--</span>
+          {% endif %}
+        </div>
+
+        <div class="vendor-name">
+          <div class="vendor-name__text">{{ form.instance.nome }}</div>
+
+          {% if form.instance.ativo %}
+            <span class="status-badge is-active">Ativo</span>
+          {% else %}
+            <span class="status-badge is-inactive">Inativo</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+
+      <form method="POST"
+            action="{% url 'pagina_interna:editar_vendedor' form.instance.id %}"
+            class="drawer-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Nome completo</label>
+          {{ form.nome }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">CPF</label>
+          {{ form.cpf }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          {{ form.email }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telefone</label>
+          {{ form.telefone }}
+        </div>
+
+        <button type="submit" class="btn-primary btn-block">
+          Salvar Alterações
+        </button>
+      </form>
+
+
+      <div class="history-header">
+        <span>Histórico de Vendas</span>
+        {% if historico_link %}
+          <a href="{{ historico_link }}" class="history-link">Ver tudo</a>
+        {% endif %}
+      </div>
+
+      <div class="history-list">
+        {% if historico_vendas %}
+          {% for venda in historico_vendas %}
+            <div class="history-item">
+              <div class="history-item__left">
+                <div class="history-item__title">Venda #{{ venda.numero|default:venda.id }}</div>
+                <div class="history-item__subtitle">
+                  {{ venda.data|date:"d M Y-H:i"|default:venda.criada_em|date:"d M Y-H:i" }}
+                </div>
+              </div>
+              <div class="history-item__value">
+                {% if venda.total %}R$ {{ venda.total }}{% elif venda.valor %}R$ {{ venda.valor }}{% else %}-{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="history-empty">Nenhuma venda encontrada para este vendedor.</div>
+        {% endif %}
+      </div>
+
+    {% else %}
+
+      <form method="POST"
+            action="{% url 'pagina_interna:vendedores' %}"
+            class="drawer-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Nome</label>
+          {{ form.nome }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">CPF</label>
+          {{ form.cpf }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          {{ form.email }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telefone</label>
+          {{ form.telefone }}
+        </div>
+
+        <div class="drawer-footer drawer-footer--inline">
+          <button type="submit" class="btn-primary btn-block">Salvar</button>
+          <button type="button" class="btn-secondary btn-block" onclick="closeDrawer()">Cancelar</button>
+        </div>
+      </form>
+    {% endif %}
+
+  </div>
+</div>
+
+
+<script>
+function openDrawer() {
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawerOverlay").classList.add("open");
+}
+
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("drawerOverlay").classList.remove("open");
+}
+
+
+{% if editando %}
+window.onload = function () {
+  openDrawer();
+
+  
+  var el = document.getElementById("vendorInitials");
+  if (el) {
+    var name = (el.getAttribute("data-name") || "").trim();
+    if (name) {
+      var parts = name.split(/\s+/).filter(Boolean);
+      var initials = parts.slice(0, 2).map(function(p){ return p[0].toUpperCase(); }).join("");
+      el.textContent = initials || "--";
+    }
+  }
+};
+{% endif %}
+</script>
+
+{% endblock %}
