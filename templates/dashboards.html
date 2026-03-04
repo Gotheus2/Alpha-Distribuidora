@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alpha Distribuidora{% endblock title %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+    
+<div class="layout-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'img/alpha_logo.png' %}" alt="Logo Alpha" />
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fa-solid fa-box"></i> Produtos</a></li>
+                <li><a href="#"><i class="fa-solid fa-cart-shopping"></i> Vendas</a></li>
+                <li><a href="#"><i class="fa-solid fa-truck"></i> Entregas</a></li>
+                <li><a href="#"><i class="fa-solid fa-users"></i> Clientes</a></li>
+                <li><a href="#"><i class="fa-solid fa-chart-line"></i> Relatórios</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair do sistema</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div class="header-title">
+                <h2>Dashboard</h2>
+                <p>Visão geral do desempenho da Alpha Distribuidora</p>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <section class="metrics-container">
+                <div class="metric-card border-blue card-ajustado">
+                    <div class="metric-info flex-col-vertical">
+                        <div class="quadrado-icone bg-azul"></div> 
+                        <span class="metric-title">Receita Total</span>
+                        <span class="metric-value">R$ 328.000</span>
+                    </div>
+                    <div class="metric-status">
+                        <span class="texto-sucesso">+12.5%</span>
+                    </div>
+                </div>
+
+                <div class="metric-card border-green card-ajustado">
+                    <div class="metric-info flex-col-vertical">
+                        <div class="quadrado-icone bg-verde"></div> 
+                        <span class="metric-title">Pedidos</span>
+                        <span class="metric-value">1,248</span>
+                    </div>
+                    <div class="metric-status">
+                        <span class="texto-sucesso">+8.2%</span>
+                    </div>
+                </div>
+
+                <div class="metric-card border-orange card-ajustado">
+                    <div class="metric-info flex-col-vertical">
+                        <div class="quadrado-icone bg-azul"></div>
+                        <span class="metric-title">Clientes Ativos</span>
+                        <span class="metric-value">892</span>
+                    </div>
+                    <div class="metric-status">
+                        <span class="texto-perigo">-2.1%</span>
+                    </div>
+                </div>
+
+                <div class="metric-card border-dark card-ajustado">
+                    <div class="metric-info flex-col-vertical">
+                        <div class="quadrado-icone bg-verde"></div>
+                        <span class="metric-title">Produtos Vendidos</span>
+                        <span class="metric-value">3,567</span>
+                    </div>
+                    <div class="metric-status">
+                        <span class="texto-sucesso">+5.4%</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts-container">
+    
+    <div class="card-grafico-bg main-chart">
+        <h3>Vendas vs Meta Mensal</h3>
+        <div class="area-do-grafico">
+            <p style="color: var(--texto-mutado); text-align: center; margin-top: 50px;">
+                Espaço reservado para o Gráfico de Barras
+            </p>
+        </div>
+    </div>
+
+    <div class="card-grafico-bg side-chart">
+        <h3>Distribuição por Categoria</h3>
+        <div class="area-do-grafico">
+            <p style="color: var(--texto-mutado); text-align: center; margin-top: 50px;">
+                Espaço para o Gráfico de Pizza
+            </p>
+        </div>
+    </div>
+</section>
+
+            <section class="table-section">
+                <div class="table-header">
+                    <h3>Top 5 Produtos Mais Vendidos</h3>
+                    <button class="btn-primary">Ver Relatório Completo</button>
+                </div>
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Unidades Vendidas</th>
+                            <th>Receita</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Notebook Dell</td>
+                            <td>145</td>
+                            <td><strong>R$ 217.500</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Mouse Logitech</td>
+                            <td>320</td>
+                            <td><strong>R$ 19.200</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Teclado Mecânico</td>
+                            <td>189</td>
+                            <td><strong>R$ 37.800</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+        </div> </main>
+</div>
+
+</body>
+</html>
