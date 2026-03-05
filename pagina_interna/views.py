@@ -8,7 +8,7 @@ def vendedores(request):
     pass
 
 def vendas(request):
-    pass
+    return render(request, "vendas.html")
 
 def produtos(request):
     pass

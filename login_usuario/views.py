@@ -1,6 +1,7 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
 
-# Create your views here.
 def login_usuario(request):
-    return HttpResponse("<h1>Hello World</h1>")
+    if request.method == "POST":
+        return redirect("cadastro_clientes")
+
+    return render(request, "login_usuario/login.html")
