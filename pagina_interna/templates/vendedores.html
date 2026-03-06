@@ -9,31 +9,23 @@ Gerenciamento de Vendedores
 
 {% block content %}
 
-
 {% if messages %}
   {% for message in messages %}
-    <div class="flash-success">
-      {{ message }}
-    </div>
+    <div class="flash-success">{{ message }}</div>
   {% endfor %}
 {% endif %}
 
 <div class="vendedores-layout">
-
-
   <div class="table-section table-section--vendedores">
 
     <div class="table-header">
       <div>
         <h3>Base de Vendedores</h3>
         <div class="table-subtitle">
-          Total: {{ total_vendedores_ativos|default:page_obj.paginator.count|default:vendedores|length }} vendedores ativos
+          Total: {{ total_vendedores_ativos }} vendedores ativos
         </div>
       </div>
-
-      <button class="btn-primary" onclick="openDrawer()">
-        + Novo Vendedor
-      </button>
+      <button class="btn-primary" onclick="openDrawerNovo()">+ Novo Vendedor</button>
     </div>
 
     <div style="overflow-x:auto;">
@@ -44,46 +36,59 @@ Gerenciamento de Vendedores
             <th>CPF</th>
             <th>Email</th>
             <th>Telefone</th>
+            <th>Status</th>
             <th>Ações</th>
           </tr>
         </thead>
-
         <tbody>
           {% for vendedor in vendedores %}
-          <tr class="{% if editando and form.instance.id == vendedor.id %}is-selected{% endif %}">
+          <tr class="{% if editando and vendedor_selecionado.id == vendedor.id %}is-selected{% endif %}">
             <td>{{ vendedor.nome }}</td>
             <td>{{ vendedor.cpf }}</td>
             <td>{{ vendedor.email }}</td>
             <td>{{ vendedor.telefone }}</td>
-
+            <td>
+              {% if vendedor.ativo %}
+                <span class="status-badge is-active">Ativo</span>
+              {% else %}
+                <span class="status-badge is-inactive">Inativo</span>
+              {% endif %}
+            </td>
             <td class="acoes-col">
               <a href="{% url 'pagina_interna:editar_vendedor' vendedor.id %}"
-                 class="btn-table btn-edit"
-                 title="Editar">
-                ✏️
+                 class="btn-table btn-edit" title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                </svg>
               </a>
-
               <form method="POST"
                     action="{% url 'pagina_interna:deletar_vendedor' vendedor.id %}"
-                    style="display:inline;">
+                    style="display:inline;background:none;border:none;padding:0;margin:0;">
                 {% csrf_token %}
                 <button class="btn-table btn-delete"
+                        style="border:none;cursor:pointer;"
                         title="Excluir"
                         onclick="return confirm('Excluir vendedor?')">
-                  🗑️
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                  </svg>
                 </button>
               </form>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="5">Nenhum vendedor cadastrado.</td>
+            <td colspan="6">Nenhum vendedor cadastrado.</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-
 
     <div class="table-footer">
       <div class="table-results">
@@ -120,164 +125,194 @@ Gerenciamento de Vendedores
     </div>
 
   </div>
-
 </div>
 
 
-<div id="drawerOverlay"
-     class="drawer-overlay"
-     onclick="closeDrawer()"></div>
+<div id="drawerOverlay" class="drawer-overlay" onclick="closeAll()"></div>
 
 
-<div id="drawer" class="drawer drawer--details">
 
+<div id="drawerNovo" class="drawer drawer--details">
   <div class="drawer-top">
-    <div class="drawer-title">
-      {% if editando %}Detalhes do Vendedor{% else %}Novo Vendedor{% endif %}
-    </div>
-    <button class="drawer-close" onclick="closeDrawer()" aria-label="Fechar">✕</button>
+    <div class="drawer-title">Novo Vendedor</div>
+    <button class="drawer-close" onclick="closeAll()" aria-label="Fechar">✕</button>
   </div>
-
   <div class="drawer-body">
+    <form method="POST"
+          action="{% url 'pagina_interna:vendedores' %}"
+          enctype="multipart/form-data"
+          class="drawer-form">
+      {% csrf_token %}
 
-    {% if editando %}
-
-      <div class="vendor-header">
-        <div class="vendor-avatar">
-          {% if form.instance.foto %}
-            <img src="{{ form.instance.foto.url }}" alt="Foto do vendedor" />
-          {% else %}
-            <span id="vendorInitials" data-name="{{ form.instance.nome|default:'' }}">--</span>
-          {% endif %}
-        </div>
-
-        <div class="vendor-name">
-          <div class="vendor-name__text">{{ form.instance.nome }}</div>
-
-          {% if form.instance.ativo %}
-            <span class="status-badge is-active">Ativo</span>
-          {% else %}
-            <span class="status-badge is-inactive">Inativo</span>
-          {% endif %}
-        </div>
+      <div class="form-group">
+        <label class="form-label">Nome</label>
+        <input class="form-input" type="text" name="nome" placeholder="Nome completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CPF</label>
+        <input class="form-input" type="text" name="cpf" placeholder="000.000.000-00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" name="email" placeholder="email@exemplo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        <input class="form-input" type="text" name="telefone" placeholder="(00) 00000-0000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Foto de perfil</label>
+        <input class="form-input" type="file" name="foto" accept="image/*">
       </div>
 
-      <div class="divider"></div>
-
-
-      <form method="POST"
-            action="{% url 'pagina_interna:editar_vendedor' form.instance.id %}"
-            class="drawer-form">
-        {% csrf_token %}
-
-        <div class="form-group">
-          <label class="form-label">Nome completo</label>
-          {{ form.nome }}
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="type-toggle">
+          <button type="button" class="toggle-btn is-active"
+                  id="btnAtivoNovo" onclick="setStatusNovo(true)">Ativo</button>
+          <button type="button" class="toggle-btn"
+                  id="btnInativoNovo" onclick="setStatusNovo(false)">Inativo</button>
         </div>
-
-        <div class="form-group">
-          <label class="form-label">CPF</label>
-          {{ form.cpf }}
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          {{ form.email }}
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Telefone</label>
-          {{ form.telefone }}
-        </div>
-
-        <button type="submit" class="btn-primary btn-block">
-          Salvar Alterações
-        </button>
-      </form>
-
-
-      <div class="history-header">
-        <span>Histórico de Vendas</span>
-        {% if historico_link %}
-          <a href="{{ historico_link }}" class="history-link">Ver tudo</a>
-        {% endif %}
+        <input type="hidden" name="ativo" id="inputAtivoNovo" value="true">
       </div>
 
-      <div class="history-list">
-        {% if historico_vendas %}
-          {% for venda in historico_vendas %}
-            <div class="history-item">
-              <div class="history-item__left">
-                <div class="history-item__title">Venda #{{ venda.numero|default:venda.id }}</div>
-                <div class="history-item__subtitle">
-                  {{ venda.data|date:"d M Y-H:i"|default:venda.criada_em|date:"d M Y-H:i" }}
-                </div>
-              </div>
-              <div class="history-item__value">
-                {% if venda.total %}R$ {{ venda.total }}{% elif venda.valor %}R$ {{ venda.valor }}{% else %}-{% endif %}
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <div class="history-empty">Nenhuma venda encontrada para este vendedor.</div>
-        {% endif %}
+      <div class="drawer-footer drawer-footer--inline">
+        <button type="submit" class="btn-primary btn-block">Salvar</button>
+        <button type="button" class="btn-secondary btn-block" onclick="closeAll()">Cancelar</button>
       </div>
-
-    {% else %}
-
-      <form method="POST"
-            action="{% url 'pagina_interna:vendedores' %}"
-            class="drawer-form">
-        {% csrf_token %}
-
-        <div class="form-group">
-          <label class="form-label">Nome</label>
-          {{ form.nome }}
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">CPF</label>
-          {{ form.cpf }}
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          {{ form.email }}
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Telefone</label>
-          {{ form.telefone }}
-        </div>
-
-        <div class="drawer-footer drawer-footer--inline">
-          <button type="submit" class="btn-primary btn-block">Salvar</button>
-          <button type="button" class="btn-secondary btn-block" onclick="closeDrawer()">Cancelar</button>
-        </div>
-      </form>
-    {% endif %}
-
+    </form>
   </div>
 </div>
-
-
-<script>
-function openDrawer() {
-  document.getElementById("drawer").classList.add("open");
-  document.getElementById("drawerOverlay").classList.add("open");
-}
-
-function closeDrawer() {
-  document.getElementById("drawer").classList.remove("open");
-  document.getElementById("drawerOverlay").classList.remove("open");
-}
 
 
 {% if editando %}
-window.onload = function () {
-  openDrawer();
+<div id="drawerEditar" class="drawer drawer--details">
+  <div class="drawer-top">
+    <div class="drawer-title">Detalhes do Vendedor</div>
+    <button class="drawer-close" onclick="closeAll()" aria-label="Fechar">✕</button>
+  </div>
+  <div class="drawer-body">
 
-  
+    <div class="vendor-header">
+      <div class="vendor-avatar">
+        {% if vendedor_selecionado.foto %}
+          <img src="{{ vendedor_selecionado.foto.url }}" alt="Foto do vendedor" />
+        {% else %}
+          <span id="vendorInitials" data-name="{{ vendedor_selecionado.nome|default:'' }}">--</span>
+        {% endif %}
+      </div>
+      <div class="vendor-name">
+        <div class="vendor-name__text">{{ vendedor_selecionado.nome }}</div>
+        {% if vendedor_selecionado.ativo %}
+          <span class="status-badge is-active">Ativo</span>
+        {% else %}
+          <span class="status-badge is-inactive">Inativo</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <form method="POST"
+          action="{% url 'pagina_interna:editar_vendedor' vendedor_selecionado.id %}"
+          enctype="multipart/form-data"
+          class="drawer-form">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Nome completo</label>
+        {{ form.nome }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">CPF</label>
+        {{ form.cpf }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        {{ form.email }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        {{ form.telefone }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Foto de perfil</label>
+        {{ form.foto }}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <div class="type-toggle">
+          <button type="button"
+                  class="toggle-btn {% if vendedor_selecionado.ativo %}is-active{% endif %}"
+                  id="btnAtivoEditar" onclick="setStatusEditar(true)">Ativo</button>
+          <button type="button"
+                  class="toggle-btn {% if not vendedor_selecionado.ativo %}is-active{% endif %}"
+                  id="btnInativoEditar" onclick="setStatusEditar(false)">Inativo</button>
+        </div>
+        <input type="hidden" name="ativo" id="inputAtivoEditar"
+               value="{{ vendedor_selecionado.ativo|yesno:'true,false' }}">
+      </div>
+
+      <button type="submit" class="btn-primary btn-block">Salvar Alterações</button>
+    </form>
+
+    <div class="history-header">
+      <span>Histórico de Vendas</span>
+    </div>
+    <div class="history-list">
+      {% if historico_vendas %}
+        {% for venda in historico_vendas %}
+          <div class="history-item">
+            <div class="history-item__left">
+              <div class="history-item__title">Venda #{{ venda.numero|default:venda.id }}</div>
+              <div class="history-item__subtitle">{{ venda.data|date:"d M Y" }}</div>
+            </div>
+            <div class="history-item__value">
+              {% if venda.total %}R$ {{ venda.total }}{% elif venda.valor %}R$ {{ venda.valor }}{% else %}-{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="history-empty">Nenhuma venda encontrada para este vendedor.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+
+<script>
+function openDrawerNovo() {
+  document.getElementById("drawerNovo").classList.add("open");
+  document.getElementById("drawerOverlay").classList.add("open");
+}
+
+function closeAll() {
+  document.querySelectorAll(".drawer").forEach(function(d) {
+    d.classList.remove("open");
+  });
+  document.getElementById("drawerOverlay").classList.remove("open");
+}
+
+function setStatusNovo(ativo) {
+  document.getElementById("inputAtivoNovo").value = ativo ? "true" : "false";
+  document.getElementById("btnAtivoNovo").classList.toggle("is-active", ativo);
+  document.getElementById("btnInativoNovo").classList.toggle("is-active", !ativo);
+}
+
+function setStatusEditar(ativo) {
+  document.getElementById("inputAtivoEditar").value = ativo ? "true" : "false";
+  document.getElementById("btnAtivoEditar").classList.toggle("is-active", ativo);
+  document.getElementById("btnInativoEditar").classList.toggle("is-active", !ativo);
+}
+
+{% if editando %}
+window.onload = function () {
+  document.getElementById("drawerEditar").classList.add("open");
+  document.getElementById("drawerOverlay").classList.add("open");
+
   var el = document.getElementById("vendorInitials");
   if (el) {
     var name = (el.getAttribute("data-name") || "").trim();

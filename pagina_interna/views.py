@@ -5,11 +5,8 @@ from django.core.paginator import Paginator
 from django.db.models import Sum
 
 from .models import Vendedor
-
 from .models import MovimentacaoFinanceira
-
 from .forms import VendedorForm
-
 
 
 def cadastro_clientes(request):
@@ -27,48 +24,66 @@ def dashboard(request):
     return render(request, "dashboard.html")
 
 
-
-def vendedores(request, id=None):
-    vendedor_selecionado = get_object_or_404(Vendedor, id=id) if id else None
-
-    if request.method == "POST":
-        form = VendedorForm(request.POST, request.FILES, instance=vendedor_selecionado)
-        if form.is_valid():
-            form.save()
-            return redirect("pagina_interna:vendedores")
-    else:
-        form = VendedorForm(instance=vendedor_selecionado)
-
+def _vendedores_context(page_number=1):
+    
     qs = Vendedor.objects.all().order_by("nome")
     paginator = Paginator(qs, 5)
-    page_number = request.GET.get("page") or 1
     page_obj = paginator.get_page(page_number)
-
     total_vendedores_ativos = Vendedor.objects.filter(ativo=True).count()
+    return page_obj, total_vendedores_ativos
 
-    historico_vendas = []
-    if vendedor_selecionado:
-        historico_vendas = (
-            vendedor_selecionado.vendas.all()
-            .order_by("-data")[:3]
-        )
 
-    start_index = page_obj.start_index() if page_obj.paginator.count else 0
-    end_index = page_obj.end_index() if page_obj.paginator.count else 0
-    total_resultados = page_obj.paginator.count
+def vendedores(request):
+    
+    page_number = request.GET.get("page") or 1
+
+    if request.method == "POST":
+        form = VendedorForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vendedor cadastrado com sucesso!")
+            return redirect("pagina_interna:vendedores")
+    else:
+        form = VendedorForm()
+
+    page_obj, total_vendedores_ativos = _vendedores_context(page_number)
 
     return render(request, "vendedores.html", {
         "form": form,
-        "editando": vendedor_selecionado is not None,
-        "vendedor_selecionado": vendedor_selecionado,
+        "editando": False,
+        "vendedor_selecionado": None,
         "page_obj": page_obj,
         "vendedores": page_obj.object_list,
-        "paginator": page_obj.paginator,
+        "total_vendedores_ativos": total_vendedores_ativos,
+        "historico_vendas": [],
+    })
+
+
+def editar_vendedor(request, id):
+    
+    vendedor = get_object_or_404(Vendedor, id=id)
+    page_number = request.GET.get("page") or 1
+
+    if request.method == "POST":
+        form = VendedorForm(request.POST, request.FILES, instance=vendedor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vendedor atualizado com sucesso!")
+            return redirect("pagina_interna:vendedores")
+    else:
+        form = VendedorForm(instance=vendedor)
+
+    page_obj, total_vendedores_ativos = _vendedores_context(page_number)
+    historico_vendas = vendedor.vendas.all().order_by("-data")[:3]
+
+    return render(request, "vendedores.html", {
+        "form": form,
+        "editando": True,
+        "vendedor_selecionado": vendedor,
+        "page_obj": page_obj,
+        "vendedores": page_obj.object_list,
         "total_vendedores_ativos": total_vendedores_ativos,
         "historico_vendas": historico_vendas,
-        "start_index": start_index,
-        "end_index": end_index,
-        "total_resultados": total_resultados,
     })
 
 
@@ -81,7 +96,6 @@ def deletar_vendedor(request, id):
 
 
 def financeiro(request):
-
     if request.method == "POST":
         tipo = (request.POST.get("tipo") or "ENTRADA").upper()
         categoria = (request.POST.get("categoria") or "").strip()
@@ -108,12 +122,11 @@ def financeiro(request):
             categoria=categoria,
             descricao=descricao,
             valor=valor,
-            data=data,  
+            data=data,
         )
         messages.success(request, "Movimentação adicionada com sucesso!")
         return redirect("pagina_interna:financeiro")
 
-    
     movimentacoes_qs = MovimentacaoFinanceira.objects.all().order_by("-data", "-id")
 
     total_entradas = movimentacoes_qs.filter(tipo="ENTRADA").aggregate(
@@ -126,10 +139,8 @@ def financeiro(request):
 
     saldo_atual = total_entradas - total_saidas
 
-    movimentacoes = movimentacoes_qs
-
     return render(request, "financeiro.html", {
-        "movimentacoes": movimentacoes,
+        "movimentacoes": movimentacoes_qs,
         "total_entradas": total_entradas,
         "total_saidas": total_saidas,
         "saldo_atual": saldo_atual,
@@ -138,7 +149,6 @@ def financeiro(request):
 
 
 def financeiro_editar(request, id):
-    
     mov = get_object_or_404(MovimentacaoFinanceira, id=id)
 
     if request.method == "POST":
