@@ -52,3 +52,15 @@ class MovimentacaoFinanceira(models.Model):
 
     def __str__(self):
         return f"{self.tipo} - {self.categoria} - {self.valor}"
+
+
+class Cliente(models.Model):
+    nome = models.CharField(max_length=100)
+    cpf_cnpj = models.CharField(max_length=18, unique=True)
+    email = models.EmailField()
+    telefone = models.CharField(max_length=20)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.nome
