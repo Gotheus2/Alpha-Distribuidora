@@ -1,5 +1,239 @@
 {% extends "base.html" %}
-
 {% block content %}
-<h2>Vendas</h2>
+
+<style>
+
+/* ===== PADRÃO DASHBOARD ===== */
+
+.page-title {
+    font-weight: 600;
+    font-size: 22px;
+}
+
+.card-dashboard {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: none;
+}
+
+.card-dashboard small {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.card-dashboard h3 {
+    margin-top: 8px;
+    font-weight: 700;
+}
+
+.table-custom thead {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #f2f6ff;
+}
+
+.btn-primary-custom {
+    background-color: #1e5eff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-primary-custom:hover {
+    background-color: #174bcc;
+}
+
+.badge-success-custom {
+    background-color: #e6f4ea;
+    color: #198754;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.badge-warning-custom {
+    background-color: #fff3cd;
+    color: #d39e00;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.card-section {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: none;
+}
+
+.card-section-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid #f1f1f1;
+    font-weight: 600;
+}
+
+.card-section-body {
+    padding: 0;
+}
+
+.card-section-footer {
+    padding: 15px 24px;
+    border-top: 1px solid #f1f1f1;
+}
+
+</style>
+
+
+<div class="container-fluid py-4">
+
+    <!-- Título -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="page-title">Gestão de Vendas</div>
+        <button class="btn btn-primary-custom">
+            + Nova Venda
+        </button>
+    </div>
+
+    <!-- Cards superiores -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+            <div class="card-dashboard">
+                <small>TOTAL DE VENDAS</small>
+                <h3>768</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-dashboard">
+                <small>VENDAS (MÊS)</small>
+                <h3>52</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-dashboard">
+                <small>VALOR TOTAL</small>
+                <h3>R$ 58.720</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-dashboard">
+                <small>VENDAS PENDENTES</small>
+                <h3 style="color:#d39e00;">8</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabela -->
+    <div class="card-section">
+
+        <div class="card-section-header d-flex justify-content-between align-items-center">
+            <div>REGISTRO DE VENDAS</div>
+            <div>
+                <button class="btn btn-light me-2">Filtrar</button>
+                <button class="btn btn-primary-custom">+ Nova Venda</button>
+            </div>
+        </div>
+
+        <div class="card-section-body">
+
+            <div class="table-responsive">
+                <table class="table table-custom mb-0 align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>CLIENTE</th>
+                            <th>PRODUTO</th>
+                            <th>VENDEDOR</th>
+                            <th>QUANTIDADE</th>
+                            <th>VALOR UNITÁRIO</th>
+                            <th>VALOR TOTAL</th>
+                            <th>DATA</th>
+                            <th>STATUS</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Supermercado Alvorada Ltda</td>
+                            <td>Ar Condicionado</td>
+                            <td>Carlos Mendes</td>
+                            <td>2</td>
+                            <td>R$ 1.200</td>
+                            <td><strong>R$ 2.400</strong></td>
+                            <td>23/04/2024</td>
+                            <td><span class="badge-success-custom">Pago</span></td>
+                            <td>•••</td>
+                        </tr>
+
+                        <tr>
+                            <td>Padaria Delícia</td>
+                            <td>Batedeira Planetária</td>
+                            <td>Eduardo Barbosa</td>
+                            <td>1</td>
+                            <td>R$ 850</td>
+                            <td><strong>R$ 850</strong></td>
+                            <td>22/04/2024</td>
+                            <td><span class="badge-warning-custom">Pendente</span></td>
+                            <td>•••</td>
+                        </tr>
+
+                        <tr>
+                            <td>Mercadinho Central</td>
+                            <td>Kit Ferramentas 50pç</td>
+                            <td>Isabella Duarte</td>
+                            <td>3</td>
+                            <td>R$ 320</td>
+                            <td><strong>R$ 960</strong></td>
+                            <td>21/04/2024</td>
+                            <td><span class="badge-success-custom">Pago</span></td>
+                            <td>•••</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <div class="card-section-footer d-flex justify-content-between align-items-center">
+            <small class="text-muted">Exibindo 3 de 768 vendas</small>
+
+            <div>
+                <button class="btn btn-sm btn-light">1</button>
+                <button class="btn btn-sm btn-outline-secondary">2</button>
+                <button class="btn btn-sm btn-outline-secondary">3</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock %}

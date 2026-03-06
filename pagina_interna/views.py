@@ -58,7 +58,6 @@ def deletar_cliente(request, id):
 def vendas(request):
     return render(request, "vendas.html")
 
-
 def produtos(request):
     return render(request, "produtos.html")
 
