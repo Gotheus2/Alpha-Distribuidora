@@ -1,19 +1,58 @@
+from django.utils import timezone
 from decimal import Decimal
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Sum
 
-from .models import Vendedor
+from .models import Vendedor, Cliente
 
 from .models import MovimentacaoFinanceira
 
-from .forms import VendedorForm
+from .forms import VendedorForm, ClienteForm
 
 
 
-def cadastro_clientes(request):
-    return render(request, "cadastro_clientes.html")
+def cadastro_clientes(request, id=None):
+    cliente_selecionado = get_object_or_404(Cliente, id=id) if id else None
+
+    if request.method == "POST":
+        form = ClienteForm(request.POST, instance=cliente_selecionado)
+        if form.is_valid():
+            form.save()
+            return redirect("pagina_interna:cadastro_clientes")
+    else:
+        form = ClienteForm(instance=cliente_selecionado)
+
+    qs = Cliente.objects.all().order_by('nome')
+    paginator = Paginator(qs, 5)
+    page_number = request.GET.get("pag") or 1
+    page_obj = paginator.get_page(page_number)
+
+    total_clientes = Cliente.objects.count()
+
+    hoje = timezone.now()
+    novo_mes = Cliente.objects.filter(
+        criado_em__year = hoje.year,
+        criado_em__month = hoje.month,
+    ).count()
+
+    clientes_inativos = Cliente.objects.filter(ativo=False).count()
+
+    return render(request, "cadastro_clientes.html", {
+        "form": form,
+        "clientes": page_obj.object_list,
+        "page_obj": page_obj,
+        "total_clientes": total_clientes,
+        "novos_mes": novo_mes,
+        "clientes_inativos": clientes_inativos,
+    })
+
+def deletar_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    if request.method == "POST":
+        cliente.delete()
+    return redirect("pagina_interna:cadastro_clientes")
 
 
 def vendas(request):

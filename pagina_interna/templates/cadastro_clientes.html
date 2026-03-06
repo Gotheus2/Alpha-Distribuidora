@@ -7,7 +7,7 @@
     <div class="metric-card border-blue">
         <div class="metric-info">
             <span class="metric-title">TOTAL DE CLIENTES</span>
-            <h3 class="metric-value">1.248</h3>
+            <h3 class="metric-value">{{ total_clientes }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0056a4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -21,7 +21,7 @@
     <div class="metric-card border-green">
         <div class="metric-info">
             <span class="metric-title">NOVOS (MÊS)</span>
-            <h3 class="metric-value">42</h3>
+            <h3 class="metric-value">{{ novos_mes }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -35,7 +35,7 @@
     <div class="metric-card border-orange">
         <div class="metric-info">
             <span class="metric-title">CLIENTES INATIVOS</span>
-            <h3 class="metric-value">34</h3>
+            <h3 class="metric-value">{{ clientes_inativos }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -85,7 +85,14 @@
                     <td>{{ cliente.email }}</td>
                     <td>{{ cliente.telefone }}</td>
                     <td>
-                        <a href="#" class="btn-table btn-edit" title="Editar">
+                        <a href="#" class="btn-table btn-edit" 
+                        data-id="{{ cliente.id }}" 
+                        data-nome="{{ cliente.nome }}" 
+                        data-cpf="{{ cliente.cpf_cnpj }}" 
+                        data-email="{{ cliente.email }}"
+                        data-telefone="{{ cliente.telefone }}"
+                        data-ativo="{{ cliente.ativo }}"
+                        title="Editar">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -93,15 +100,18 @@
                         </a>
                     </td>
                     <td>
-                        <a href="#" class="btn-table btn-delete" title="Apagar">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                <path d="M10 11v6"/>
-                                <path d="M14 11v6"/>
-                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                            </svg>
-                        </a>
+                        <form method="POST" action="{% url 'pagina_interna:deletar_cliente' cliente.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-table btn-delete" title="Apagar" onclick="return confirm('Tem certeza que deseja apagar {{ cliente.nome }}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6"/>
+                                    <path d="M14 11v6"/>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                </svg>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% empty %}
@@ -114,61 +124,193 @@
             </tbody>
         </table>
     </div>
+
+
+    {% if page_obj.has_other_pages %}
+    <div class="table-pagination">
+      <span class="pagination-info">
+          Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} clientes
+      </span>
+      <div class="pagination-controls">
+          {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="btn-pag"> Anterior</a>
+          {% else %}
+            <button class="btn-pag" disabled>Anterior</button>
+          {% endif %}
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="btn-pag">Próximo</a>
+          {% else %}
+            <button class="btn-pag" disabled>Próximo</button>
+          {% endif %}
+      </div>
+    </div> 
+    {% endif %}
   </div>
 
+
+  
   <div class="drawer-overlay" id="drawerOverlay"></div>
 
   <div class="drawer" id="drawerNovoCliente">
     <div class="drawer-header">
+        <h3>{% if form.instance.pk %}Editar Cliente{% else %}Novo Cliente{% endif %}</h3>
         <button class="drawer-close" id="btnFecharDrawer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
-        <h3>Novo Cliente</h3>
     </div>
-    <div class="drawer-body">
-        <div class="form-group">
-            <label class="form-label">NOME COMPLETO</label>
-            <input type="text" class="form-input" placeholder="Ex: João Silva" />
+    <form method="POST" action="{% if form.instance.pk %}{% url 'pagina_interna:editar_cliente' form.instance.pk %}{% else %}{% url 'pagina_interna:cadastro_clientes' %}{% endif %}">
+        {% csrf_token %}
+        <div class="drawer-body">
+            <div class="form-group">
+                <label class="form-label">NOME COMPLETO</label>
+                {{ form.nome }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">CPF/CNPJ</label>
+                {{ form.cpf_cnpj }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">EMAIL</label>
+                {{ form.email }}
+            </div> 
+            <div class="form-group">
+                <label class="form-label">TELEFONE</label>
+                {{ form.telefone }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">STATUS</label>
+                <label class="form-switch">
+                    {{ form.ativo }}
+                    <span class="switch-slider"></span>
+                    <span class="switch-label" id="switchLabel">Ativo</span>
+                </label>
+            </div>
         </div>
-        <div class="form-group">
-            <label class="form-label">CPF/CNPJ</label>
-            <input type="text" class="form-input" placeholder="000.000.000-00" />
+        <div class="drawer-footer">
+            <button type="submit" class="btn-primary btn-block">{% if form.instance.pk %}Salvar Alterações{% else %}Cadastrar{% endif %}</button>
+            <button type="button" class="btn-secondary btn-block" id="btnCancelar">Cancelar</button>
         </div>
-        <div class="form-group">
-            <label class="form-label">EMAIL</label>
-            <input type="email" class="form-input" placeholder="email@exemplo.com" />
-        </div>
-        <div class="form-group">
-            <label class="form-label">TELEFONE</label>
-            <input type="text" class="form-input" placeholder="(00) 00000-0000" />
-        </div>
-    </div>
-    <div class="drawer-footer">
-        <button class="btn-primary btn-block">Cadastrar</button>
-        <button class="btn-secondary btn-block" id="btnCancelar">Cancelar</button>
-    </div>
+    </form>
   </div>
 
-  <script>
-    const drawer = document.getElementById('drawerNovoCliente')
-    const overlay = document.getElementById('drawerOverlay')
+<script src="https://unpkg.com/imask"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const drawer  = document.getElementById('drawerNovoCliente');
+      const overlay = document.getElementById('drawerOverlay');
 
-    function abrirDrawer() {
+      function abrirDrawer() {
         drawer.classList.add('open');
         overlay.classList.add('open');
-    }
+      }
 
-    function fecharDrawer() {
+      function fecharDrawer() {
         drawer.classList.remove('open');
         overlay.classList.remove('open');
-    }
+        if (document.getElementById('id_nome'))  document.getElementById('id_nome').value  = '';
+        if (document.getElementById('id_email')) document.getElementById('id_email').value = '';
+        if (maskCpf) maskCpf.unmaskedValue = '';
+        if (maskTel) {
+            maskTel.value = '';
+            maskTel.unmaskedValue = '';
+        }
+        document.querySelector('#drawerNovoCliente form').action = "{% url 'pagina_interna:cadastro_clientes' %}";
+        document.querySelector('#drawerNovoCliente h3').textContent = 'Novo Cliente';
+        document.querySelector('#drawerNovoCliente .btn-primary[type="submit"]').textContent = 'Cadastrar';
+      }
 
-    document.getElementById('btnNovoCliente').addEventListener('click', abrirDrawer);
-    document.getElementById('btnFecharDrawer').addEventListener('click', fecharDrawer);
-    document.getElementById('btnCancelar').addEventListener('click', fecharDrawer);
-    overlay.addEventListener('click', fecharDrawer)
-  </script>
+      const inputCpf = document.querySelector('input[name="cpf_cnpj"]');
+      const inputTel = document.querySelector('input[name="telefone"]');
+      let maskCpf = null;
+      let maskTel = null;
+
+      if (inputCpf) {
+        maskCpf = IMask(inputCpf, {
+          mask: [
+            { mask: '000.000.000-00' },
+            { mask: '00.000.000/0000-00' }
+          ]
+        });
+      }
+
+      if (inputTel) {
+        maskTel = IMask(inputTel, {
+        mask: [
+        {
+            mask: '(00) 0000-0000',
+            lazy: false
+        },
+        {
+            mask: '(00) 00000-0000',
+            lazy: false
+        }
+          ],
+    dispatch: function (appended, dynamicMasked) {
+      const number = (dynamicMasked.unmaskedValue + appended).replace(/\D/g,'');
+      return number.length > 10
+        ? dynamicMasked.compiledMasks[1]
+        : dynamicMasked.compiledMasks[0];
+            }
+        });
+      }
+
+      const btnNovoCliente = document.getElementById('btnNovoCliente');
+      if (btnNovoCliente) {
+          btnNovoCliente.addEventListener('click', function() {
+            document.querySelector('#drawerNovoCliente form').action = "{% url 'pagina_interna:cadastro_clientes' %}";
+            
+            if (document.getElementById('id_nome')) document.getElementById('id_nome').value  = '';
+            if (document.getElementById('id_email')) document.getElementById('id_email').value = '';
+            if (inputCpf) inputCpf.value = '';
+            if (inputTel) inputTel.value = '';
+            
+            if (maskTel) maskTel.unmaskedValue = '';
+            if (maskCpf) maskCpf.unmaskedValue = '';
+            
+            document.querySelector('#drawerNovoCliente h3').textContent = 'Novo Cliente';
+            document.querySelector('#drawerNovoCliente .btn-primary[type="submit"]').textContent = 'Cadastrar';
+            abrirDrawer();
+          });
+      }
+
+      document.querySelectorAll('.btn-edit').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const id = this.dataset.id;
+          const ativo = this.dataset.ativo == "True";
+          
+          document.querySelector('#drawerNovoCliente form').action = `/clientes/${id}/`;
+          document.getElementById('id_ativo').checked = ativo;
+          document.getElementById('switchLabel').textContent = ativo ? 'Ativo' : 'Inativo';
+
+          document.getElementById('id_ativo').addEventListener('change', function() {
+            document.getElementById('switchLabel').textContent = this.checked ? 'Ativo' : 'Inativo';
+          })
+          
+          if (document.getElementById('id_nome')) document.getElementById('id_nome').value  = this.dataset.nome;
+          if (document.getElementById('id_email')) document.getElementById('id_email').value = this.dataset.email;
+          
+          if (maskCpf && this.dataset.cpf) {
+              maskCpf.unmaskedValue = this.dataset.cpf.replace(/\D/g, ''); 
+          }
+          if (maskTel) {
+               maskTel.unmaskedValue = this.dataset.telefone
+                ? this.dataset.telefone.replace(/\D/g, '')
+                : '';
+          }
+          
+          document.querySelector('#drawerNovoCliente h3').textContent = 'Editar Cliente';
+          document.querySelector('#drawerNovoCliente .btn-primary[type="submit"]').textContent = 'Salvar Alterações';
+          abrirDrawer();
+        });
+      });
+
+      document.getElementById('btnFecharDrawer').addEventListener('click', fecharDrawer);
+      document.getElementById('btnCancelar').addEventListener('click', fecharDrawer);
+      overlay.addEventListener('click', fecharDrawer);
+  });
+</script>
 {% endblock content %}
