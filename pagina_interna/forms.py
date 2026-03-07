@@ -2,7 +2,7 @@ from django import forms
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from .models import Vendedor
-from .models import Cliente
+from .models import Cliente, Produto
 
 
 class FotoVendedorWidget(forms.ClearableFileInput):
@@ -81,3 +81,17 @@ class ClienteForm(forms.ModelForm):
     def clean_telefone(self):
         valor = self.cleaned_data.get("telefone", "")
         return ''.join(filter(str.isdigit, valor))
+    
+class ProdutoForm(forms.ModelForm):
+    class Meta:
+        model = Produto
+        fields = ["nome", "sku", "categoria", "custo", "preco_venda", "estoque", "imagem"]
+        widgets = {
+            "nome": forms.TextInput(attrs={"class": "form-input", "placeholder": "Ex: Caixa A4"}),
+            "sku": forms.TextInput(attrs={"class": "form-input", "placeholder": "Ex: CP-2026"}),
+            "categoria": forms.Select(attrs={"class": "form-input form-select"}),
+            "custo": forms.NumberInput(attrs={"class": "form-input", "placeholder": "0.00", "step": "0.01", "min": "0", "id": "inputCusto"}),
+            "preco_venda": forms.NumberInput(attrs={"class": "form-input", "placeholder": "0.00", "step": "0.01", "min": "0", "id": "inputPrecoVenda"}),
+            "estoque": forms.NumberInput(attrs={"class": "form-input", "placeholder": "0", "min": "0"}),
+            "imagem": forms.ClearableFileInput(attrs={"class": "form-input", "accept": "image/*", "id": "uploadImage"}),
+        }
