@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - Alpha Distribuidora</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+    
+<div class="layout-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="{% static 'img/alpha_logo.png' %}" alt="Logo Alpha" />
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="{% url 'pagina_interna:dashboard' %}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="produtos.html"><i class="fa-solid fa-box"></i> Produtos</a></li>
+                <li><a href="#"><i class="fa-solid fa-cart-shopping"></i> Vendas</a></li>
+                <li><a href="#"><i class="fa-solid fa-truck"></i> Entregas</a></li>
+                <li><a href="#"><i class="fa-solid fa-users"></i> Clientes</a></li>
+                <li><a href="#" class="active"><i class="fa-solid fa-chart-line"></i> Relatórios</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair do sistema</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div class="header-title">
+                <h2>Relatórios</h2>
+                <p>Análise detalhada e relatórios de desempenho</p>
+            </div>
+            <div class="table-actions">
+                <select class="form-input" style="padding: 8px; width: auto;">
+                    <option>Último Semestre</option>
+                    <option>Último Ano</option>
+                </select>
+                <button class="btn-primary" style="background-color: #f8fafc; color: var(--azul-alpha); border: 1px solid var(--azul-alpha);">
+                    <i class="fa-solid fa-filter"></i> Filtros
+                </button>
+                <button class="btn-success">
+                    <i class="fa-solid fa-download"></i> Exportar
+                </button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <section class="metrics-container">
+                <div class="metric-card border-blue">
+                    <div class="metric-info">
+                        <span class="metric-title">Receita Total</span>
+                        <span class="metric-value">R$ 328.000</span>
+                        <span class="profile-role" style="color: var(--verde-alpha)">+15.2% vs período anterior</span>
+                    </div>
+                </div>
+
+                <div class="metric-card border-green">
+                    <div class="metric-info">
+                        <span class="metric-title">Lucro Líquido</span>
+                        <span class="metric-value" style="color: var(--verde-alpha)">R$ 109.000</span>
+                        <span class="profile-role">Margem de 33.2%</span>
+                    </div>
+                </div>
+
+                <div class="metric-card border-blue">
+                    <div class="metric-info">
+                        <span class="metric-title">Total de Clientes</span>
+                        <span class="metric-value">1,039</span>
+                        <span class="profile-role" style="color: var(--azul-alpha)">319 novos clientes</span>
+                    </div>
+                </div>
+
+                <div class="metric-card border-green">
+                    <div class="metric-info">
+                        <span class="metric-title">Itens Vendidos</span>
+                        <span class="metric-value" style="color: var(--verde-alpha)">18,542</span>
+                        <span class="profile-role">Ticket médio: R$ 203</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts-container" style="display: block;">
+                <div class="card-grafico-bg" style="width: 100%; min-height: 350px;">
+                    <h3>Desempenho Financeiro Mensal</h3>
+                    <p class="profile-role" style="margin-bottom: 20px;">Comparativo de vendas, custos e lucro</p>
+                    <div class="area-do-grafico">
+                        <p style="text-align: center; color: var(--texto-mutado); padding-top: 100px;">
+                            [ Gráfico de Linhas: Vendas (Azul), Custos (Vermelho), Lucro (Verde) ]
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-section" style="margin-top: 30px;">
+                <div class="table-header">
+                    <h3>Desempenho por Região</h3>
+                </div>
+                <p class="profile-role" style="margin-top: -15px; margin-bottom: 20px;">Análise de vendas regionais</p>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Região</th>
+                            <th>Vendas</th>
+                            <th>Clientes</th>
+                            <th>Ticket Médio</th>
+                            <th>% do Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sudeste</td>
+                            <td><strong>R$ 185.000</strong></td>
+                            <td>342</td>
+                            <td>R$ 541</td>
+                            <td style="color: var(--verde-alpha); font-weight: 700;">35.0%</td>
+                        </tr>
+                        <tr>
+                            <td>Sul</td>
+                            <td><strong>R$ 124.000</strong></td>
+                            <td>198</td>
+                            <td>R$ 626</td>
+                            <td style="color: var(--verde-alpha); font-weight: 700;">23.5%</td>
+                        </tr>
+                        <tr>
+                            <td>Nordeste</td>
+                            <td><strong>R$ 98.000</strong></td>
+                            <td>245</td>
+                            <td>R$ 400</td>
+                            <td style="color: var(--verde-alpha); font-weight: 700;">18.6%</td>
+                        </tr>
+                        <tr>
+                            <td>Centro-Oeste</td>
+                            <td><strong>R$ 76.000</strong></td>
+                            <td>156</td>
+                            <td>R$ 487</td>
+                            <td style="color: var(--verde-alpha); font-weight: 700;">14.4%</td>
+                        </tr>
+                        <tr>
+                            <td>Norte</td>
+                            <td><strong>R$ 45.000</strong></td>
+                            <td>98</td>
+                            <td>R$ 459</td>
+                            <td style="color: var(--verde-alpha); font-weight: 700;">8.5%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

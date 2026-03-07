@@ -168,6 +168,22 @@ def deletar_vendedor(request, id):
         messages.success(request, "Vendedor removido!")
     return redirect("pagina_interna:vendedores")
 
+def relatorios(request):
+    total_receita = MovimentacaoFinanceira.objects.filter(tipo="ENTRADA").aggregate(Sum("valor"))['valor__sum'] or 0
+    total_clientes = Cliente.objects.count()
+    total_produtos_vendidos = 18542  
+
+    desempenho_regional = [
+        {'regiao': 'Sudeste', 'vendas': 185000, 'clientes': 342, 'ticket': 541, 'percent': 35.0},
+        {'regiao': 'Sul', 'vendas': 124000, 'clientes': 198, 'ticket': 626, 'percent': 23.5},
+    ]
+
+    return render(request, "relatorios.html", {
+        "total_receita": total_receita,
+        "total_clientes": total_clientes,
+        "total_produtos_vendidos": total_produtos_vendidos,
+        "regioes": desempenho_regional,
+    })
 
 def financeiro(request):
     if request.method == "POST":

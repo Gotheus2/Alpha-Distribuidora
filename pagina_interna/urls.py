@@ -5,6 +5,7 @@ app_name = "pagina_interna"
 
 urlpatterns = [
     path('clientes/', views.cadastro_clientes, name='cadastro_clientes'),
+    path('relatorios/', views.relatorios, name='relatorios'),
     path("clientes/<int:id>/", views.cadastro_clientes, name="editar_cliente"),
     path("clientes/deletar/<int:id>/", views.deletar_cliente, name="deletar_cliente"),
     path("vendedores/", views.vendedores, name="vendedores"),
