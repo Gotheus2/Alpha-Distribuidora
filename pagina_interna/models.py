@@ -64,3 +64,29 @@ class Cliente(models.Model):
 
     def __str__(self):
         return self.nome
+
+class Produto(models.Model):
+    CATEGORIA_CHOICES = [
+        ("embalagens", "Embalagens"),
+        ("papelaria", "Papelaria"),
+        ("limpeza", "Limpeza"),
+        ("outros", "Outros"),
+    ]
+
+    nome = models.CharField(max_length=200)
+    sku = models.CharField(max_length=50, unique=True)
+    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default="outros")
+    custo = models.DecimalField(max_digits=10, decimal_places=2)
+    preco_venda = models.DecimalField(max_digits=10, decimal_places=2)
+    estoque = models.PositiveIntegerField(default=0)
+    imagem = models.ImageField(upload_to="produtos/", blank=False, null=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def margem(self):
+        if self.preco_venda and self.custo > 0:
+            return round((self.preco_venda - self.custo) / self.preco_venda * 100, 1)
+        return 0.0
+    
+    def __str__(self):
+        return self.nome

@@ -450,7 +450,7 @@ button.btn-delete:hover {
 
 .produtos-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr minmax(0, 380px);
   gap: 24px;
   align-items: start;
 }
@@ -1196,4 +1196,31 @@ label.foto-clear-row input[type="checkbox"] {
 
 #id_ativo {
   display: none;
+}
+
+#id_imagem {
+  display: none;
+}
+
+.produtos-layout {
+  min-width: 0;
+}
+
+.produto-form-panel {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.form-panel-body {
+  min-width: 0;
+}
+
+.form-row > .form-group {
+  min-width: 0;
+  overflow: hidden;
+}
+
+input[type="number"] {
+  min-width: 0;
+  width: 100%;
 }

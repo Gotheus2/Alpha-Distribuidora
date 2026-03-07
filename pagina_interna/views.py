@@ -5,9 +5,9 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Sum
 
-from .models import Vendedor, Cliente
+from .models import Vendedor, Cliente, Produto
 from .models import MovimentacaoFinanceira
-from .forms import VendedorForm, ClienteForm
+from .forms import VendedorForm, ClienteForm, ProdutoForm
 
 
 def cadastro_clientes(request, id=None):
@@ -23,7 +23,7 @@ def cadastro_clientes(request, id=None):
 
     qs = Cliente.objects.all().order_by('nome')
     paginator = Paginator(qs, 5)
-    page_number = request.GET.get("pag") or 1
+    page_number = request.GET.get("page") or 1
     page_obj = paginator.get_page(page_number)
 
     total_clientes = Cliente.objects.count()
@@ -55,8 +55,43 @@ def deletar_cliente(request, id):
 def vendas(request):
     return render(request, "vendas.html")
 
-def produtos(request):
-    return render(request, "produtos.html")
+def produtos(request, id=None):
+    produto_selecionado = get_object_or_404(Produto, id=id) if id else None
+
+    if request.method == "POST":
+        form = ProdutoForm(request.POST, request.FILES, instance=produto_selecionado)
+        if form.is_valid():
+            form.save()
+            return redirect("pagina_interna:produtos")
+    else:
+        form = ProdutoForm(instance=produto_selecionado)
+
+    qs = Produto.objects.all().order_by("nome")
+    paginator = Paginator(qs, 10)
+    page_number = request.GET.get("page") or 1
+    page_obj = paginator.get_page(page_number)
+
+    total_produtos = Produto.objects.count()
+    baixo_estoque = Produto.objects.filter(estoque__gt=0, estoque__lte=20).count()
+    sem_estoque = Produto.objects.filter(estoque=0).count()
+
+    produto_mais_vendido = "-"
+
+    return render(request, "produtos.html", {
+        "form": form,
+        "produtos": page_obj.object_list,
+        "page_obj": page_obj,
+        "total_produtos": total_produtos,
+        "baixo_estoque": baixo_estoque,
+        "sem_estoque": sem_estoque,
+        "produto_mais_vendido": produto_mais_vendido,
+    })
+
+def deletar_produto(request, id):
+    produto = get_object_or_404(Produto, id=id)
+    if request.method == "POST":
+        produto.delete()
+    return redirect("pagina_interna:produtos")
 
 
 def dashboard(request):
