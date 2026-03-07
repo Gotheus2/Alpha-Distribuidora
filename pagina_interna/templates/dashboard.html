@@ -7,6 +7,16 @@
     <title>{% block title %}Alpha Distribuidora{% endblock title %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <style>
+        /* Ajustes rápidos para garantir que os gráficos caibam no layout */
+        .area-do-grafico {
+            position: relative;
+            height: 250px; /* Ajuste conforme necessário */
+            width: 100%;
+        }
+        .main-chart { min-width: 60%; }
+        .side-chart { min-width: 30%; }
+    </style>
 </head>
 <body>
     
@@ -90,25 +100,20 @@
             </section>
 
             <section class="charts-container">
-    
-    <div class="card-grafico-bg main-chart">
-        <h3>Vendas vs Meta Mensal</h3>
-        <div class="area-do-grafico">
-            <p style="color: var(--texto-mutado); text-align: center; margin-top: 50px;">
-                Espaço reservado para o Gráfico de Barras
-            </p>
-        </div>
-    </div>
+                <div class="card-grafico-bg main-chart">
+                    <h3>Vendas vs Meta Mensal</h3>
+                    <div class="area-do-grafico">
+                        <canvas id="vendasMetaChart"></canvas>
+                    </div>
+                </div>
 
-    <div class="card-grafico-bg side-chart">
-        <h3>Distribuição por Categoria</h3>
-        <div class="area-do-grafico">
-            <p style="color: var(--texto-mutado); text-align: center; margin-top: 50px;">
-                Espaço para o Gráfico de Pizza
-            </p>
-        </div>
-    </div>
-</section>
+                <div class="card-grafico-bg side-chart">
+                    <h3>Distribuição por Categoria</h3>
+                    <div class="area-do-grafico">
+                        <canvas id="categoriaChart"></canvas>
+                    </div>
+                </div>
+            </section>
 
             <section class="table-section">
                 <div class="table-header">
@@ -143,8 +148,73 @@
                 </table>
             </section>
 
-        </div> </main>
+        </div> 
+    </main>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Configurações Globais do Chart.js
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.font.family = "'Segoe UI', Roboto, sans-serif";
+
+    // 1. Gráfico de Vendas vs Meta (Barras)
+    const ctxBar = document.getElementById('vendasMetaChart').getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [
+                {
+                    label: 'Vendas',
+                    data: [45000, 52000, 48000, 62000, 56000, 69000],
+                    backgroundColor: '#005696',
+                    borderRadius: 5
+                },
+                {
+                    label: 'Meta',
+                    data: [50000, 50000, 50000, 55000, 55000, 60000],
+                    backgroundColor: '#2ca84b',
+                    borderRadius: 5
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true } }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 2. Gráfico de Distribuição (Rosca/Pizza)
+    const ctxPie = document.getElementById('categoriaChart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Eletrônicos', 'Móveis', 'Rio', 'Outros'],
+            datasets: [{
+                data: [40, 25, 20, 15],
+                backgroundColor: ['#005696', '#2ca84b', '#1e293b', '#cbd5e1'],
+                hoverOffset: 4,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true } }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
