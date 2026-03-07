@@ -2,12 +2,13 @@
 {% load static %}
 {% block title %}Produtos - Alpha Distribuidora{% endblock title %}
 {% block header_title %}Catálogo de Produtos{% endblock header_title %}
-{% block content %} 
+{% block content %}
+
 <div class="metric-container">
     <div class="metric-card border-blue">
         <div class="metric-info">
             <span class="metric-title">TOTAL DE PRODUTOS</span>
-            <h3 class="metric-value">1239</h3>
+            <h3 class="metric-value">{{ total_produtos }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0056a4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -21,7 +22,7 @@
     <div class="metric-card border-green">
         <div class="metric-info">
             <span class="metric-title">PRODUTO MAIS VENDIDO</span>
-            <h3 class="metric-value produto-mais-vendido">Fita Adesiva 3mm</h3>
+            <h3 class="metric-value produto-mais-vendido">{{ produto_mais_vendido }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -34,7 +35,7 @@
     <div class="metric-card border-orange">
         <div class="metric-info">
             <span class="metric-title">BAIXO ESTOQUE</span>
-            <h3 class="metric-value">75</h3>
+            <h3 class="metric-value">{{ baixo_estoque }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -48,7 +49,7 @@
     <div class="metric-card border-dark">
         <div class="metric-info">
             <span class="metric-title">SEM ESTOQUE</span>
-            <h3 class="metric-value">33</h3>
+            <h3 class="metric-value">{{ sem_estoque }}</h3>
         </div>
         <div class="metric-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#333f4a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -74,6 +75,8 @@
                         <th>PREÇO DE VENDA</th>
                         <th>MARGEM (%)</th>
                         <th>ESTOQUE</th>
+                        <th>EDITAR</th>
+                        <th>APAGAR</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -87,22 +90,53 @@
                         <td>R$ {{ produto.preco_venda }}</td>
                         <td>
                             <span class="badge-margem {% if produto.margem >= 40 %}alta{% elif produto.margem >= 20 %}media{% else %}baixa{% endif %}">
-                                {{ produto.margem }}
+                                {{ produto.margem }}%
                             </span>
                         </td>
                         <td>
                             {% if produto.estoque == 0 %}
-                            <span class="badge-estoque zerado">{{ produto.estoque }} un</span>
-                            {% elif produto.estoque == 5 %}<!--Arrumar isso aqui dps, colocar <= ao inves de ==-->
-                            <span class="badge-estoque baixo">{{ produto.estoque }} un</span>
+                                <span class="badge-estoque zerado">{{ produto.estoque }} un</span>
+                            {% elif produto.estoque <= 20 %}
+                                <span class="badge-estoque baixo">{{ produto.estoque }} un</span>
                             {% else %}
-                            <span class="badge-estoque ok">{{ produto.estoque }} un</span>
+                                <span class="badge-estoque ok">{{ produto.estoque }} un</span>
                             {% endif %}
+                        </td>
+                        <td>
+                            <a href="#" class="btn-table btn-edit"
+                               data-id="{{ produto.id }}"
+                               data-nome="{{ produto.nome }}"
+                               data-sku="{{ produto.sku }}"
+                               data-categoria="{{ produto.categoria }}"
+                               data-custo="{{ produto.custo }}"
+                               data-preco="{{ produto.preco_venda }}"
+                               data-estoque="{{ produto.estoque }}"
+                               title="Editar">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </a>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'pagina_interna:deletar_produto' produto.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-table btn-delete" title="Apagar"
+                                        onclick="return confirm('Tem certeza que deseja apagar {{ produto.nome }}?')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                        <path d="M10 11v6"/>
+                                        <path d="M14 11v6"/>
+                                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                    </svg>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" style="text-align: center; padding: 40px; color: #888;">
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #888;">
                             Nenhum produto cadastrado
                         </td>
                     </tr>
@@ -110,13 +144,26 @@
                 </tbody>
             </table>
         </div>
+
+        {% if page_obj.has_other_pages %}
         <div class="table-pagination">
-            <span class="pagination-info">Mostrando 1 a 4 de 1239 resultados</span>
+            <span class="pagination-info">
+                Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} produtos
+            </span>
             <div class="pagination-controls">
-                <button class="btn-pag" disabled>Anterior</button>
-                <button class="btn-pag">Próximo</button>
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="btn-pag">Anterior</a>
+                {% else %}
+                    <button class="btn-pag" disabled>Anterior</button>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="btn-pag">Próximo</a>
+                {% else %}
+                    <button class="btn-pag" disabled>Próximo</button>
+                {% endif %}
             </div>
         </div>
+        {% endif %}
     </div>
 
     <div class="produto-form-panel">
@@ -127,83 +174,100 @@
                     <line x1="12" y1="8" x2="12" y2="16"/>
                     <line x1="8" y1="12" x2="16" y2="12"/>
                 </svg>
-                <span>Novo Produto</span>
+                <span id="formPanelTitle">Novo Produto</span>
             </div>
-            <p class="form-panel-subtitle">Preencha os dados para cadastrar</p>
+            <p class="form-panel-subtitle" id="formPanelSubtitle">Preencha os dados para cadastrar</p>
         </div>
 
-        <div class="form-panel-body">
-            <div class="form-group">
-                <label class="form-label">NOME DO PRODUTO</label>
-                <input type="text" class="form-input" placeholder="Ex: Caixa A4" />
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">SKU</label>
-                    <input type="text" class="form-input" placeholder="CP-2026 "/>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">CATEGORIA</label>
-                    <select class="form-input form-select">
-                        <option value="">Selecionar</option>
-                        <option>Embalagens</option>
-                        <option>Papelaria</option>
-                        <option>Limpeza</option>
-                        <option>Outros</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">PREÇO DE CUSTO</label>
-                    <input type="number" class="form-input" id="inputCusto" placeholder="R$0,00" step="0.01" min="0" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">PREÇO VENDA</label>
-                    <input type="number" class="form-input" id="inputPrecoVenda" placeholder="R$0,00" step="0.01" min="0" />
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="margem-estimada-box">
-                    <span class="margem-label">MARGEM ESTIMADA: </span>
-                    <span class="margem-valor" id="margemDisplay">0.0%</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">ESTOQUE INICIAL</label>
-                <input type="number" class="form-input" placeholder="0" min="0" />
-            </div>
-            <div class="form-group">
-                <label class="form-label">IMAGEM DO PRODUTO</label>
-                <label class="upload-area" for="uploadImage">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#b0b7c3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="16 16 12 12 8 16"/>
-                        <line x1="12" y1="12" x2="12" y2="21"/>
-                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
-                    </svg>
-                    <p><span class="upload-link">Upload de um arquivo</span> ou arraste e solte</p>
-                    <p class="upload-hint">PNG, JPG, GIF até 10MB</p>
-                    <input type="file" id="uploadImage" accept="image/*" style="display: none;" />
-                </label>
-            </div>
-        </div>
+        <form method="POST" action="{% url 'pagina_interna:produtos' %}" enctype="multipart/form-data" id="produtoForm">
+            {% csrf_token %}
+            <div class="form-panel-body">
 
-        <div class="form-panel-footer">
-            <button class="btn-success btn-block">Adicionar produto</button>
-        </div>
+                <div class="form-group">
+                    <label class="form-label">NOME DO PRODUTO</label>
+                    {{ form.nome }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">SKU</label>
+                        {{ form.sku }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CATEGORIA</label>
+                        {{ form.categoria }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">PREÇO DE CUSTO</label>
+                        {{ form.custo }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">PREÇO DE VENDA</label>
+                        {{ form.preco_venda }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="margem-estimada-box">
+                        <span class="margem-label">MARGEM ESTIMADA:</span>
+                        <span class="margem-valor" id="margemDisplay">0.0%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ESTOQUE INICIAL</label>
+                    {{ form.estoque }}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">IMAGEM DO PRODUTO <span style="color:#dc2626">*</span></label>
+                    <label class="upload-area" for="id_imagem" id="uploadLabel">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#b0b7c3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 16 12 12 8 16"/>
+                            <line x1="12" y1="12" x2="12" y2="21"/>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                        </svg>
+                        <p id="uploadText"><span class="upload-link">Upload de um arquivo</span> ou arraste e solte</p>
+                        <p class="upload-hint">PNG, JPG, GIF até 10MB</p>
+                    </label>
+                    {{ form.imagem }}
+                </div>
+
+                {% if form.errors %}
+                <div style="background:#fee2e2; border-radius:6px; padding:12px; font-size:0.85rem; color:#991b1b;">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div>{{ field.label }}: {{ error }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+
+            <div class="form-panel-footer">
+                <button type="submit" class="btn-success btn-block" id="formSubmitBtn">Adicionar produto</button>
+                <button type="button" class="btn-secondary btn-block" id="btnCancelarEdicao" style="display:none; margin-top: 8px;">Cancelar edição</button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
-    const inputCusto = document.getElementById('inputCusto');
-    const inputPreco = document.getElementById('inputPrecoVenda');
+document.addEventListener('DOMContentLoaded', function () {
+
+    const inputCusto = document.querySelector('input[name="custo"]');
+    const inputPreco = document.querySelector('input[name="preco_venda"]');
     const margemDisplay = document.getElementById('margemDisplay');
 
     function calcularMargem() {
-        const custo = parseFloat(inputCusto.value);
-        const preco = parseFloat(inputPreco.value);
-        if(custo > 0 && preco > 0) {
-            const margem = ((preco- custo) / preco * 100).toFixed(1);
+        const custo = parseFloat(inputCusto ? inputCusto.value : 0);
+        const preco = parseFloat(inputPreco ? inputPreco.value : 0);
+        if (custo > 0 && preco > 0) {
+            const margem = ((preco - custo) / preco * 100).toFixed(1);
             margemDisplay.textContent = margem + '%';
             margemDisplay.style.color = margem >= 0 ? 'var(--verde-alpha)' : '#dc2626';
         } else {
@@ -212,15 +276,64 @@
         }
     }
 
-    inputCusto.addEventListener('input', calcularMargem);
-    inputPreco.addEventListener('input', calcularMargem);
+    if (inputCusto) inputCusto.addEventListener('input', calcularMargem);
+    if (inputPreco) inputPreco.addEventListener('input', calcularMargem);
 
-    document.getElementById('uploadImage').addEventListener('change', function(e) {
-        const files = e.target.files[0];
-        if(file) {
-            const label = this.closest('.upload-area');
-            label.querySelector('p:first-of-type').textContent = file.name;
-        }
+    const uploadInput = document.getElementById('id_imagem');
+    if (uploadInput) {
+        uploadInput.style.display = 'none';
+        uploadInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                document.getElementById('uploadText').innerHTML = '✓ ' + file.name;
+            }
+        });
+    }
+
+    const form = document.getElementById('produtoForm');
+    const titleEl = document.getElementById('formPanelTitle');
+    const subtitleEl = document.getElementById('formPanelSubtitle');
+    const submitBtn = document.getElementById('formSubmitBtn');
+    const cancelBtn = document.getElementById('btnCancelarEdicao');
+    const baseAction = "{% url 'pagina_interna:produtos' %}";
+
+    document.querySelectorAll('.btn-edit').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const id = this.dataset.id;
+            form.action = `/produtos/${id}/`;
+
+            document.getElementById('id_nome').value = this.dataset.nome;
+            document.getElementById('id_sku').value = this.dataset.sku;
+            document.getElementById('id_categoria').value = this.dataset.categoria;
+            document.getElementById('id_custo').value = this.dataset.custo;
+            document.getElementById('id_preco_venda').value = this.dataset.preco;
+            document.getElementById('id_estoque').value = this.dataset.estoque;
+
+            calcularMargem();
+
+            titleEl.textContent = 'Editar Produto';
+            subtitleEl.textContent = 'Altere os dados e salve';
+            submitBtn.textContent = 'Salvar Alterações';
+            cancelBtn.style.display = 'block';
+
+            form.closest('.produto-form-panel').scrollIntoView({ behavior: 'smooth' });
+        });
     });
+
+    cancelBtn.addEventListener('click', function () {
+        form.action = baseAction;
+        form.reset();
+        calcularMargem();
+        document.getElementById('uploadText').innerHTML = '<span class="upload-link">Upload de um arquivo</span> ou arraste e solte';
+        titleEl.textContent = 'Novo Produto';
+        subtitleEl.textContent = 'Preencha os dados para cadastrar';
+        submitBtn.textContent = 'Adicionar produto';
+        cancelBtn.style.display = 'none';
+    });
+
+});
 </script>
+
 {% endblock content %}
