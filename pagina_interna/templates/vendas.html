@@ -1,239 +1,428 @@
 {% extends "base.html" %}
 {% block content %}
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --warning: #f72585;
+        --background: #f8f9fc;
+        --text-main: #2b2d42;
+        --text-muted: #8d99ae;
+        --card-bg: #ffffff;
+    }
 
-/* ===== PADRÃO DASHBOARD ===== */
+    body {
+        background-color: var(--background);
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+    }
 
-.page-title {
-    font-weight: 600;
-    font-size: 22px;
-}
+    /* ===== HEADER & TITLES ===== */
+    .page-header {
+        margin-bottom: 2rem;
+    }
 
-.card-dashboard {
-    background: #ffffff;
+    .page-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    /* ===== CARDS DASHBOARD ===== */
+    .card-dashboard {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 1px solid rgba(0,0,0,0.03);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+        transition: transform 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .card-dashboard:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-dashboard small {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-dashboard h3 {
+        margin: 0;
+        font-weight: 800;
+        font-size: 1.75rem;
+        color: var(--text-main);
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    /* ===== BOTÕES ===== */
+    .btn-primary-custom {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-primary-custom:hover {
+        background: var(--secondary);
+        transform: scale(1.02);
+        color: white;
+    }
+
+    /* ===== TABELA MODERNA ===== */
+    .card-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border: none;
+        overflow: hidden;
+    }
+
+    .card-section-header {
+        padding: 1.5rem 2rem;
+        background: white;
+        border-bottom: 1px solid #f0f2f5;
+    }
+
+    .table-custom thead {
+        background-color: #fcfcfd;
+    }
+
+    .table-custom thead th {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 1.2rem 1.5rem;
+        border: none;
+    }
+
+    .table-custom tbody td {
+        padding: 1.2rem 1.5rem;
+        vertical-align: middle;
+        border-color: #f8f9fa;
+        color: #4a5568;
+    }
+
+    .avatar-circle {
+        width: 32px;
+        height: 32px;
+        background: #e2e8f0;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: var(--primary);
+    }
+
+    /* Estilo para valores positivos */
+    .text-amount {
+        color: var(--text-main);
+        font-weight: 700;
+    }
+
+    /* ===== BOTÕES DE AÇÃO (FILTRAR/EXPORTAR) ===== */
+.btn-action-outline {
+    background-color: transparent;
+    border: 1.5px solid #e2e8f0;
+    color: #64748b;
+    padding: 8px 16px;
     border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre ícone e texto */
+    transition: all 0.2s ease;
+}
+
+.btn-action-outline:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1e293b;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.btn-action-outline i {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+/* Variante para o Exportar (levemente diferente se quiser destacar) */
+.btn-export {
+    background-color: #f1f5f9;
     border: none;
+    color: #475569;
 }
 
-.card-dashboard small {
-    color: #6c757d;
-    font-weight: 500;
+.btn-export:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
 }
 
-.card-dashboard h3 {
-    margin-top: 8px;
+/* ===== ESTILO DO FORMULÁRIO (MODAL) ===== */
+.modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.5rem 2rem;
+}
+
+.modal-title {
     font-weight: 700;
+    color: var(--text-main);
 }
 
-.table-custom thead {
-    background-color: #f8f9fa;
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #f1f5f9;
+    padding: 1.2rem 2rem;
+}
+
+/* Customização dos Inputs */
+.form-label {
     font-weight: 600;
-    font-size: 14px;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
 }
 
-.table-custom tbody tr:hover {
-    background-color: #f2f6ff;
-}
-
-.btn-primary-custom {
-    background-color: #1e5eff;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 6px;
-    font-weight: 500;
-}
-
-.btn-primary-custom:hover {
-    background-color: #174bcc;
-}
-
-.badge-success-custom {
-    background-color: #e6f4ea;
-    color: #198754;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-.badge-warning-custom {
-    background-color: #fff3cd;
-    color: #d39e00;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-.card-section {
-    background: #ffffff;
+.form-control, .form-select {
+    border: 1.5px solid #e2e8f0;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background-color: #fcfcfd;
 }
 
-.card-section-header {
-    padding: 18px 24px;
-    border-bottom: 1px solid #f1f1f1;
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+    background-color: #fff;
+}
+
+/* Botão de Cancelar */
+.btn-cancel {
+    background: #f1f5f9;
+    color: #64748b;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
     font-weight: 600;
 }
 
-.card-section-body {
-    padding: 0;
-}
-
-.card-section-footer {
-    padding: 15px 24px;
-    border-top: 1px solid #f1f1f1;
+.btn-cancel:hover {
+    background: #e2e8f0;
+    color: #475569;
 }
 
 </style>
 
+<div class="container-fluid py-5 px-4">
 
-<div class="container-fluid py-4">
-
-    <!-- Título -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="page-title">Gestão de Vendas</div>
-        <button class="btn btn-primary-custom">
-            + Nova Venda
-        </button>
+    <div class="row page-header align-items-center">
+        <div class="col">
+            <h1 class="page-title">Relatório de Vendas</h1>
+            <p class="text-muted mb-0">Acompanhe o desempenho comercial em tempo real.</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#novaVendaModal">
+                <i class="fas fa-plus me-2"></i> Nova Venda
+            </button>
+        </div>
     </div>
 
-    <!-- Cards superiores -->
-    <div class="row g-4 mb-4">
-
+    <div class="row g-4 mb-5">
         <div class="col-md-3">
             <div class="card-dashboard">
-                <small>TOTAL DE VENDAS</small>
-                <h3>768</h3>
+                <div class="icon-box" style="background: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <small>Total de Vendas</small>
+                <h3>{{ total_vendas }}</h3>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card-dashboard">
-                <small>VENDAS (MÊS)</small>
-                <h3>52</h3>
+                <div class="icon-box" style="background: rgba(76, 201, 240, 0.1); color: var(--success);">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <small>Vendas (Mês)</small>
+                <h3>{{ vendas_mes }}</h3>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card-dashboard">
-                <small>VALOR TOTAL</small>
-                <h3>R$ 58.720</h3>
+                <div class="icon-box" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <small>Valor Total acumulado</small>
+                <h3>R$ {{ valor_total }}</h3>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card-dashboard">
-                <small>VENDAS PENDENTES</small>
-                <h3 style="color:#d39e00;">8</h3>
+                <div class="icon-box" style="background: rgba(247, 37, 133, 0.1); color: var(--warning);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <small>Aguardando Pagamento</small>
+                <h3 style="color: var(--warning);">{{ vendas_pendentes }}</h3>
             </div>
         </div>
-
     </div>
 
-    <!-- Tabela -->
     <div class="card-section">
-
         <div class="card-section-header d-flex justify-content-between align-items-center">
-            <div>REGISTRO DE VENDAS</div>
-            <div>
-                <button class="btn btn-light me-2">Filtrar</button>
-                <button class="btn btn-primary-custom">+ Nova Venda</button>
+            <h5 class="mb-0 fw-bold">Registro de Vendas</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-action-outline">
+                    <i class="fas fa-filter"></i>
+                    <span>Filtrar</span>
+                </button>
+                <button class="btn btn-action-outline btn-export">
+                    <i class="fas fa-file-export"></i>
+                    <span>Exportar</span>
+                </button>
             </div>
         </div>
 
-        <div class="card-section-body">
-
-            <div class="table-responsive">
-                <table class="table table-custom mb-0 align-middle">
-
-                    <thead>
-                        <tr>
-                            <th>CLIENTE</th>
-                            <th>PRODUTO</th>
-                            <th>VENDEDOR</th>
-                            <th>QUANTIDADE</th>
-                            <th>VALOR UNITÁRIO</th>
-                            <th>VALOR TOTAL</th>
-                            <th>DATA</th>
-                            <th>STATUS</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>Supermercado Alvorada Ltda</td>
-                            <td>Ar Condicionado</td>
-                            <td>Carlos Mendes</td>
-                            <td>2</td>
-                            <td>R$ 1.200</td>
-                            <td><strong>R$ 2.400</strong></td>
-                            <td>23/04/2024</td>
-                            <td><span class="badge-success-custom">Pago</span></td>
-                            <td>•••</td>
-                        </tr>
-
-                        <tr>
-                            <td>Padaria Delícia</td>
-                            <td>Batedeira Planetária</td>
-                            <td>Eduardo Barbosa</td>
-                            <td>1</td>
-                            <td>R$ 850</td>
-                            <td><strong>R$ 850</strong></td>
-                            <td>22/04/2024</td>
-                            <td><span class="badge-warning-custom">Pendente</span></td>
-                            <td>•••</td>
-                        </tr>
-
-                        <tr>
-                            <td>Mercadinho Central</td>
-                            <td>Kit Ferramentas 50pç</td>
-                            <td>Isabella Duarte</td>
-                            <td>3</td>
-                            <td>R$ 320</td>
-                            <td><strong>R$ 960</strong></td>
-                            <td>21/04/2024</td>
-                            <td><span class="badge-success-custom">Pago</span></td>
-                            <td>•••</td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
+        <div class="table-responsive">
+            <table class="table table-custom mb-0">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Vendedor</th>
+                        <th>Valor</th>
+                        <th>Data do Registro</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venda in vendas %}
+                    <tr>
+                        <td class="fw-bold text-dark">{{ venda.produto }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle">
+                                    {{ venda.vendedor.nome|slice:":1" }}
+                                </div>
+                                {{ venda.vendedor.nome }}
+                            </div>
+                        </td>
+                        <td><span class="text-amount">R$ {{ venda.valor }}</span></td>
+                        <td>
+                            <span class="text-muted small">
+                                <i class="far fa-calendar me-2"></i>{{ venda.data|date:"d/m/Y" }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <button class="btn btn-light btn-sm rounded-circle"><i class="fas fa-ellipsis-v"></i></button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-5 text-center text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3 d-block opacity-25"></i>
+                            Nenhuma venda registrada ainda.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <div class="card-section-footer d-flex justify-content-between align-items-center">
-            <small class="text-muted">Exibindo 3 de 768 vendas</small>
-
-            <div>
-                <button class="btn btn-sm btn-light">1</button>
-                <button class="btn btn-sm btn-outline-secondary">2</button>
-                <button class="btn btn-sm btn-outline-secondary">3</button>
+        
+        <div class="card-section-footer bg-light border-0">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Total: <strong>{{ total_vendas }}</strong> registros</span>
             </div>
         </div>
+    </div>
 
+    <div class="modal fade" id="novaVendaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cart-plus me-2 text-primary"></i> Nova Venda
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label class="form-label">Produto</label>
+                            <input type="text" name="produto" class="form-control" placeholder="Nome do item vendido" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label">Vendedor</label>
+                                <select name="vendedor" class="form-select" required>
+                                    <option value="" selected disabled>Selecione...</option>
+                                    {% for vendedor in vendedores %}
+                                    <option value="{{ vendedor.id }}">{{ vendedor.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label">Valor (R$)</label>
+                                <input type="number" step="0.01" name="valor" class="form-control" placeholder="0,00" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="fas fa-check me-2"></i>Salvar Venda
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {% endblock %}

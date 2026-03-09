@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Sum
 
-from .models import Vendedor, Cliente, Produto
+from .models import Vendedor, Cliente, Produto , Venda
 from .models import MovimentacaoFinanceira
 from .forms import VendedorForm, ClienteForm, ProdutoForm
 
@@ -53,7 +53,48 @@ def deletar_cliente(request, id):
 
 
 def vendas(request):
-    return render(request, "vendas.html")
+
+    if request.method == "POST":
+
+        vendedor_id = request.POST.get("vendedor")
+        produto = request.POST.get("produto")
+        valor = request.POST.get("valor")
+
+        vendedor = Vendedor.objects.get(id=vendedor_id)
+
+        Venda.objects.create(
+            vendedor=vendedor,
+            produto=produto,
+            valor=valor
+        )
+
+        return redirect("pagina_interna:vendas")
+
+    vendas = Venda.objects.select_related("vendedor").order_by("-data")
+
+    vendedores = Vendedor.objects.all()
+
+    total_vendas = vendas.count()
+
+    valor_total = vendas.aggregate(total=Sum("valor"))["total"] or 0
+
+    mes_atual = timezone.now().month
+    ano_atual = timezone.now().year
+
+    vendas_mes = vendas.filter(
+        data__month=mes_atual,
+        data__year=ano_atual
+    ).count()
+
+    context = {
+        "vendas": vendas,
+        "vendedores": vendedores,
+        "total_vendas": total_vendas,
+        "valor_total": valor_total,
+        "vendas_mes": vendas_mes
+    }
+
+    return render(request, "vendas.html", context)
 
 def produtos(request, id=None):
     produto_selecionado = get_object_or_404(Produto, id=id) if id else None
